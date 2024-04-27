@@ -1,5 +1,11 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
+  get 'profiles/show'
+  get 'profiles/update'
   devise_for :users
+
+  mount Sidekiq::Web => '/sidekiq'
   # get 'home/index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -11,5 +17,19 @@ Rails.application.routes.draw do
   # root "posts#index"
   root 'home#index'
 
-  resources :movies
+  resource :profile
+
+  resources :movies do
+    collection do
+      get :omdb_search
+      post :omdb_import
+    end
+
+    resources :comments
+
+  
+
+  # resources :movies do
+  #   resources :comments
+  end
 end
